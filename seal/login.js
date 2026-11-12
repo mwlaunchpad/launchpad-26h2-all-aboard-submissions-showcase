@@ -26,7 +26,7 @@
   // Already signed in (e.g. a deep link answered by the host before the worker took over)? Go straight in.
   ready.then(async (reg) => {
     const status = await ask(reg.active, { type: 'status' });
-    if (status && status.signedIn && status.build === root.dataset.build && !sessionStorage.getItem('vault-retry')) {
+    if (status && status.signedIn && status.kid === root.dataset.kid && !sessionStorage.getItem('vault-retry')) {
       sessionStorage.setItem('vault-retry', '1');
       location.reload();
     } else {
@@ -71,7 +71,7 @@
       raw.fill(0);
       const hours = document.getElementById('remember').checked ? 24 * 7 : HOURS;
       const reg = await ready;
-      const ok = await ask(reg.active, { type: 'login', enc: encKey, mac: macKey, build: ring.build, exp: Date.now() + hours * 3600e3 });
+      const ok = await ask(reg.active, { type: 'login', enc: encKey, mac: macKey, kid: ring.keyId || ring.build, exp: Date.now() + hours * 3600e3 });
       if (!ok) throw new Error('worker');
       say('Signed in. Opening the showcase…');
       sessionStorage.removeItem('vault-retry');

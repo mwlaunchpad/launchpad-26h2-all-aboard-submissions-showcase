@@ -1,15 +1,17 @@
 /* Vault service worker. Published in plaintext; holds no secrets.
  * After sign-in the login shell hands it two non-extractable CryptoKeys (AES-GCM content key, HMAC path key).
  * It then serves every same-origin request under BASE by fetching vault/<hmac(path)>.bin and decrypting it.
- * Signed out (or keys from an older build) → navigations get the login shell, everything else 401.
+ * Signed out (or keys that no longer match keyring.json) → navigations get the login shell, everything else 401.
+ * Keys normally stay the same across deploys, so a redeploy doesn't sign anyone out; HTML is always revalidated.
  */
 const BASE = '%BASE%';
 const DB_NAME = 'showcase-vault';
 const PASSTHROUGH = /^(sw\.js|keyring\.json|robots\.txt|_shell\/.*|vault\/.*)$/;
 const enc = new TextEncoder();
 
-let keys; // { enc: CryptoKey, mac: CryptoKey, build: string, exp: number } | null
-let lastBuildCheck = 0;
+let keys; // { enc: CryptoKey, mac: CryptoKey, kid: string, exp: number } | null
+let lastKeyCheck = 0;
+let seenBuild = null;
 const mem = new Map(); // rel -> { mime, body }  (small LRU for media, so video seeks don't re-decrypt)
 let memBytes = 0;
 const MEM_LIMIT = 160 * 1024 * 1024;
@@ -62,9 +64,9 @@ async function clearKeys() {
 self.addEventListener('message', (e) => {
   const reply = (m) => e.ports[0] && e.ports[0].postMessage(m);
   const d = e.data || {};
-  if (d.type === 'login') e.waitUntil(setKeys({ enc: d.enc, mac: d.mac, build: d.build, exp: d.exp }).then(() => reply({ ok: true })));
+  if (d.type === 'login') e.waitUntil(setKeys({ enc: d.enc, mac: d.mac, kid: d.kid, exp: d.exp }).then(() => reply({ ok: true })));
   else if (d.type === 'logout') e.waitUntil(clearKeys().then(() => reply({ ok: true })));
-  else if (d.type === 'status') e.waitUntil(getKeys().then((k) => reply({ signedIn: Boolean(k), build: k ? k.build : null })));
+  else if (d.type === 'status') e.waitUntil(getKeys().then((k) => reply({ signedIn: Boolean(k), kid: k ? k.kid : null })));
 });
 
 // ---------- vault ----------
@@ -78,14 +80,15 @@ async function readVault(rel, k) {
     return hit;
   }
   const name = hex(await crypto.subtle.sign('HMAC', k.mac, enc.encode(rel))).slice(0, 32);
-  const res = await fetch(`${BASE}vault/${name}.bin`);
+  // HTML is revalidated every time so a new deploy never pairs an old page with assets that are gone.
+  const res = await fetch(`${BASE}vault/${name}.bin`, rel.endsWith('.html') ? { cache: 'no-cache' } : undefined);
   if (!res.ok) return null;
   const buf = await res.arrayBuffer();
   let pt;
   try {
     pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: buf.slice(0, 12), additionalData: enc.encode(rel) }, k.enc, buf.slice(12));
   } catch {
-    return 'stale'; // keys from a previous build
+    return 'stale'; // keys no longer match this deploy
   }
   const n = new DataView(pt).getUint32(0);
   const head = JSON.parse(new TextDecoder().decode(pt.slice(4, 4 + n)));
@@ -134,12 +137,17 @@ function respond(file, req) {
 
 const shell = () => fetch(BASE, { cache: 'no-cache' }).then((r) => new Response(r.body, { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } }));
 
-async function buildIsCurrent(k) {
-  if (Date.now() - lastBuildCheck < 60000) return true;
+async function keysAreCurrent(k) {
+  if (Date.now() - lastKeyCheck < 60000) return true;
   try {
     const ring = await (await fetch(`${BASE}keyring.json`, { cache: 'no-cache' })).json();
-    lastBuildCheck = Date.now();
-    return ring.build === k.build;
+    lastKeyCheck = Date.now();
+    if (seenBuild && ring.build !== seenBuild) {
+      mem.clear(); // new deploy: drop decrypted media so replaced files are re-read
+      memBytes = 0;
+    }
+    seenBuild = ring.build;
+    return (ring.keyId || ring.build) === k.kid;
   } catch {
     return true; // offline: keep going with what we have
   }
@@ -148,7 +156,7 @@ async function buildIsCurrent(k) {
 async function handle(req, rel) {
   const nav = req.mode === 'navigate';
   let k = await getKeys();
-  if (k && nav && !(await buildIsCurrent(k))) {
+  if (k && nav && !(await keysAreCurrent(k))) {
     await clearKeys();
     k = null;
   }

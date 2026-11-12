@@ -2,7 +2,7 @@
 // Seals the built site (dist/) into an encrypted vault for public static hosting (site/).
 //
 // Every file in dist/ becomes site/vault/<hmac(path)>.bin = IV(12) ‖ AES-256-GCM(header ‖ body, aad = path).
-// A fresh content key + HMAC key are generated per build and wrapped once per user in site/keyring.json
+// A content key + HMAC path key (stable across deploys when SHOWCASE_SITE_KEY is set) are wrapped once per user in site/keyring.json
 // under a PBKDF2-SHA256 key derived from that user's password. Only a login shell and the service worker
 // (seal/) are published in plaintext; the service worker decrypts vault files in the browser after login.
 //
@@ -48,8 +48,16 @@ if (new Set(users.map((u) => u.username)).size !== users.length) die('duplicate 
 if (!fs.existsSync(path.join(DIST, 'index.html'))) die('dist/index.html not found: run `npm run build` first');
 
 // ---- keys ------------------------------------------------------------------------------
-const encKey = crypto.randomBytes(32);
-const macKey = crypto.randomBytes(32);
+// With SHOWCASE_SITE_KEY set (CI), the content keys are derived from it plus the user list, so they stay the same
+// from one deploy to the next and a redeploy doesn't sign anyone out. Changing the user list (or the site key)
+// rotates them, which is how a removed user loses access. Without it (local runs), every seal gets random keys.
+const siteKey = process.env.SHOWCASE_SITE_KEY?.trim() ? Buffer.from(process.env.SHOWCASE_SITE_KEY.trim(), 'base64') : null;
+if (siteKey && siteKey.length < 32) die('SHOWCASE_SITE_KEY must be 32+ random bytes, base64 (openssl rand -base64 32)');
+const userSalt = crypto.createHash('sha256').update(users.map((u) => `${u.username}:${u.password}`).sort().join('\n')).digest();
+const derive = (info) => Buffer.from(crypto.hkdfSync('sha256', siteKey, userSalt, info, 32));
+const encKey = siteKey ? derive('showcase content key') : crypto.randomBytes(32);
+const macKey = siteKey ? derive('showcase path key') : crypto.randomBytes(32);
+const keyId = crypto.createHmac('sha256', macKey).update('key id').digest('hex').slice(0, 16);
 const siteSalt = crypto.randomBytes(16);
 const build = `${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}-${crypto.randomBytes(4).toString('hex')}`;
 const b64 = (b) => Buffer.from(b).toString('base64');
@@ -105,6 +113,7 @@ for (const rel of walk(DIST)) {
 const keyring = {
   v: 1,
   build,
+  keyId,
   iter: ITER,
   salt: b64(siteSalt),
   users: users
@@ -122,7 +131,7 @@ const keyring = {
 fs.writeFileSync(path.join(SITE, 'keyring.json'), JSON.stringify(keyring));
 
 // ---- public shell ------------------------------------------------------------------------
-const fill = (s) => s.replaceAll('%BASE%', BASE).replaceAll('%BUILD%', build).replaceAll('%SESSION_HOURS%', String(config.sessionHours ?? 12));
+const fill = (s) => s.replaceAll('%BASE%', BASE).replaceAll('%BUILD%', build).replaceAll('%KEYID%', keyId).replaceAll('%SESSION_HOURS%', String(config.sessionHours ?? 12));
 const shellHtml = fill(fs.readFileSync(path.join(SHELL, 'index.html'), 'utf8'));
 fs.writeFileSync(path.join(SITE, 'index.html'), shellHtml);
 fs.writeFileSync(path.join(SITE, '404.html'), shellHtml);
@@ -161,4 +170,4 @@ for (const rel of walk(SITE)) {
   if (!pt.subarray(4 + n).toString('utf8').includes('<div id="root">')) die('self-test failed');
 }
 
-console.log(`seal: ${count} files sealed (${(bytes / 1e6).toFixed(1)} MB), ${users.length} user(s), build ${build} → ${path.relative(ROOT, SITE)}/`);
+console.log(`seal: ${count} files sealed (${(bytes / 1e6).toFixed(1)} MB), ${users.length} user(s), build ${build}, keys ${keyId}${siteKey ? '' : ' (random: no SHOWCASE_SITE_KEY)'} → ${path.relative(ROOT, SITE)}/`);

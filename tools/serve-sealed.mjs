@@ -22,11 +22,17 @@ http
     let p = path.join(SITE, decodeURIComponent(url.pathname.slice(base.length)));
     if (!p.startsWith(SITE)) return res.writeHead(400).end();
     if (fs.existsSync(p) && fs.statSync(p).isDirectory()) p = path.join(p, 'index.html');
-    if (!fs.existsSync(p)) {
-      res.writeHead(404, { 'Content-Type': TYPES['.html'] });
-      return res.end(fs.readFileSync(path.join(SITE, '404.html')));
+    try {
+      if (!fs.existsSync(p)) {
+        const notFound = fs.readFileSync(path.join(SITE, '404.html'));
+        res.writeHead(404, { 'Content-Type': TYPES['.html'] });
+        return res.end(notFound);
+      }
+      const body = fs.readFileSync(p);
+      res.writeHead(200, { 'Content-Type': TYPES[path.extname(p)] ?? 'application/octet-stream', 'Cache-Control': 'max-age=600' });
+      res.end(body);
+    } catch {
+      res.writeHead(503).end('site/ is being rebuilt'); // e.g. `npm run seal` ran while serving
     }
-    res.writeHead(200, { 'Content-Type': TYPES[path.extname(p)] ?? 'application/octet-stream', 'Cache-Control': 'max-age=600' });
-    fs.createReadStream(p).pipe(res);
   })
   .listen(port, () => console.log(`sealed site: http://localhost:${port}${base}`));

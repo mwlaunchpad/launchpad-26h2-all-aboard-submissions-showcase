@@ -23,8 +23,10 @@ private archive (showcase/)  ──►  tools/content.mjs  ──►  vite build
   (`seal/sw.js`). The service worker decrypts vault files on the fly, including the embedded team demos and video
   range requests.
 - **What's public.** Without a valid login, only the shell and opaque `vault/*.bin` files are reachable.
-- **Revoking access.** Every deploy rotates the keys, so removing a user from `SHOWCASE_USERS` and redeploying
-  revokes them.
+- **Redeploys don't sign people out.** The site keys are derived from the `SHOWCASE_SITE_KEY` secret and the user
+  list, so they stay the same between deploys.
+- **Revoking access.** Changing `SHOWCASE_USERS` (e.g. removing a user) changes the keys, so the next deploy revokes
+  them and signs everyone else out once. To force everyone out, set a new `SHOWCASE_SITE_KEY`.
 - **Limits.** This is client-side encryption: it stops scraping and casual access, but anyone holding a login can
   share it, and short passwords can be brute-forced offline against `keyring.json`. Use long passphrases.
 
@@ -71,6 +73,7 @@ secrets on this repo:
 | Secret | What |
 |---|---|
 | `ARCHIVE_DEPLOY_KEY` **or** `ARCHIVE_TOKEN` | Read access to the archive: a read-only deploy key (needs *Deploy keys* allowed in the org settings), or a fine-grained token limited to the archive repo with *Contents: read* |
-| `SHOWCASE_USERS` | One `username:password` per line. Set it yourself: `gh secret set SHOWCASE_USERS < users.txt` |
+| `SHOWCASE_USERS` | One `username:password` per line |
+| `SHOWCASE_SITE_KEY` | 32 random bytes, base64: `openssl rand -base64 32 \| gh secret set SHOWCASE_SITE_KEY`. Optional; without it every deploy signs everyone out |
 
 After the archive's content changes, re-run the workflow to publish it.

@@ -47,8 +47,6 @@ jobs:
         run: npm run build
         env:
           ARCHIVE_DIR: .archive
-          # Teams whose screenshots aren't captured yet show a placeholder. Remove once all are in.
-          CONTENT_PARTIAL: '1'
 
       - name: Seal (encrypt) the build
         run: |
@@ -56,6 +54,8 @@ jobs:
           npm run seal
         env:
           SHOWCASE_USERS: ${{ secrets.SHOWCASE_USERS }}
+          # Keeps the site keys stable across deploys so a redeploy doesn't sign people out.
+          SHOWCASE_SITE_KEY: ${{ secrets.SHOWCASE_SITE_KEY }}
 
       - name: Remove plaintext from the runner
         run: rm -rf dist public/_content public/demos src/generated .archive
