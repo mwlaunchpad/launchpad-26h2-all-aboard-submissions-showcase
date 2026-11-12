@@ -24,7 +24,7 @@
 .m-best .eyebrow { color: rgba(255, 255, 255, 0.8); }
 .m-best__name { font-family: var(--ff-display); font-weight: 700; font-size: 44px; letter-spacing: -0.02em; }
 .m-best__product { font-family: var(--ff-mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; }
-.m-awards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.m-awards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
 .m-award { display: block; padding: 22px; background: #fff; border: 1px solid var(--line); border-radius: 16px; }
 .m-award__team { font-family: var(--ff-display); font-weight: 700; font-size: 22px; margin-top: 8px; }
 .m-award p { font-size: 14px; color: var(--fg-light-2); margin-top: 8px; }
