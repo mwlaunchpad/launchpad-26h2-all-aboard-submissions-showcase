@@ -1,0 +1,7 @@
+{
+  "base": "/launchpad-26h2-all-aboard-submissions-showcase/",
+  "defaultVariant": null,
+  "reviewMode": true,
+  "sessionHours": 12,
+  "pbkdf2Iterations": 600000
+}

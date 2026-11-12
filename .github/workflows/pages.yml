@@ -1,0 +1,78 @@
+name: Deploy showcase
+
+# Builds the showcase from the PRIVATE archive's showcase/ content, encrypts it (tools/seal.mjs),
+# and publishes only the login shell + ciphertext to GitHub Pages. This repo is public, so:
+# no step prints content, and nothing but site/ (ciphertext) is ever uploaded as an artifact.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Read access to the private archive: a read-only deploy key (ARCHIVE_DEPLOY_KEY) or a
+      # fine-grained token with Contents: read on that one repo (ARCHIVE_TOKEN). One is required.
+      - name: Check out showcase content from the private archive
+        uses: actions/checkout@v4
+        with:
+          repository: mwlaunchpad/launchpad-26h2-all-aboard-submissions-archive
+          ssh-key: ${{ secrets.ARCHIVE_DEPLOY_KEY }}
+          token: ${{ secrets.ARCHIVE_TOKEN || github.token }}
+          path: .archive
+          sparse-checkout: showcase
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+      - name: Build
+        run: npm run build
+        env:
+          ARCHIVE_DIR: .archive
+          # Teams whose screenshots aren't captured yet show a placeholder. Remove once all are in.
+          CONTENT_PARTIAL: '1'
+
+      - name: Seal (encrypt) the build
+        run: |
+          if [ -z "$SHOWCASE_USERS" ]; then echo "::error::Set the SHOWCASE_USERS secret (lines of username:password)"; exit 1; fi
+          npm run seal
+        env:
+          SHOWCASE_USERS: ${{ secrets.SHOWCASE_USERS }}
+
+      - name: Remove plaintext from the runner
+        run: rm -rf dist public/_content public/demos src/generated .archive
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

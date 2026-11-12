@@ -1,0 +1,32 @@
+{
+  "name": "launchpad-26h2-all-aboard-submissions-showcase",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Presentation engine for the LaunchPad '26 Edition 02 submissions showcase. Content lives in the private archive repo.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "content": "node tools/content.mjs",
+    "dev": "node tools/content.mjs && vite",
+    "build": "node tools/content.mjs && vite build",
+    "seal": "node tools/seal.mjs",
+    "preview:sealed": "node tools/serve-sealed.mjs",
+    "capture": "node tools/capture/capture.mjs",
+    "build-demo": "node tools/demos/build-demo.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "playwright": "^1.65.0",
+    "sharp": "^0.35.5",
+    "vite": "^5.4.21",
+    "yaml": "^2.9.1",
+    "zod": "^3.25.76"
+  }
+}

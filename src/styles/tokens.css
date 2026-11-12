@@ -1,0 +1,117 @@
+/* ==========================================================================
+   Launchpad Design System: tokens
+   Source of truth for color, type, spacing, radii, shadows.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  /* Core surfaces */
+  --ink:          #0B1020;
+  --ink-2:        #141A2E;
+  --ink-3:        #1E2540;
+  --paper:        #FAFAF7;
+  --paper-2:      #F1F1EC;
+
+  /* Accents: magenta→blue gradient family */
+  --magenta:      #C6268C;
+  --magenta-2:    #D84BA0;
+  --magenta-3:    #A61973;
+  --azure:        #1E6FE0;
+  --azure-2:      #3B87EE;
+  --violet:       #6B3AB8;
+  --gradient:     linear-gradient(90deg, #C6268C 0%, #8B43C9 45%, #1E6FE0 100%);
+  --gradient-v:   linear-gradient(180deg, #C6268C 0%, #8B43C9 45%, #1E6FE0 100%);
+
+  --ignition:     var(--magenta);
+  --ignition-2:   var(--magenta-2);
+  --ignition-3:   var(--magenta-3);
+
+  --heritage:     #006A4D;
+  --heritage-2:   #00855F;
+  --signal:       #F5D547;
+
+  /* Neutrals (cool grey ramp) */
+  --fg-0:         #F5F7FB;
+  --fg-1:         #D4D9E5;
+  --fg-2:         #8C95AC;
+  --fg-3:         #5A6279;
+  --fg-4:         #343A50;
+
+  --fg-light-1:   #0B1020;
+  --fg-light-2:   #3A4256;
+  --fg-light-3:   #6E7690;
+
+  --border:       #E3E3DC;
+  --border-dark:  rgba(255,255,255,0.08);
+
+  /* Semantic */
+  --success:      #2FAF7A;
+  --warning:      #E8A321;
+  --danger:       #E04545;
+  --info:         #4A8CE8;
+
+  /* Typography families */
+  --ff-display:   'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --ff-body:      'Inter', ui-sans-serif, system-ui, sans-serif;
+  --ff-mono:      'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  /* Spacing (4-based) */
+  --s-0: 0;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  /* Radii */
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   16px;
+  --r-xl:   24px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --shadow-card:    0 1px 2px rgba(10,15,30,0.06), 0 8px 24px rgba(10,15,30,0.06);
+  --shadow-lift:    0 2px 4px rgba(10,15,30,0.08), 0 16px 40px rgba(10,15,30,0.10);
+  --inset-hairline: inset 0 1px 0 rgba(255,255,255,0.04);
+
+  /* Motion */
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+  --dur-3: 400ms;
+  --ease-launch: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Layout */
+  --container:     1200px;
+  --container-px:  24px;
+}
+
+/* Reset / base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--ff-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--fg-light-1);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+::selection { background: var(--ignition); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid var(--ignition);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}

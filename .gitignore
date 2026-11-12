@@ -1,0 +1,16 @@
+node_modules/
+dist/
+site/
+.archive/
+src/generated/
+public/_content/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+public/demos/
+
+# login list for the SHOWCASE_USERS secret: never commit
+users.txt
+*users*.txt
