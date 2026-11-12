@@ -68,7 +68,7 @@ function Thumb({ id }) {
 }
 
 export default function Picker() {
-  useDocumentTitle('Choose a layout');
+  useDocumentTitle('Choose a view');
   return (
     <>
       <header className="header">
@@ -81,25 +81,25 @@ export default function Picker() {
       </header>
       <section className="page-hero">
         <div className="container">
-          <div className="eyebrow">Review · Layout options</div>
+          <div className="eyebrow">
+            {event.name} · {event.edition}
+          </div>
           <h1 className="page-hero__title">
-            Same {teams.length} teams. <span className="grad-text">Four ways to show them.</span>
+            {teams.length} teams. <span className="grad-text">Four ways in.</span>
           </h1>
           <p className="page-hero__lede">
-            Every option uses the same content, screenshots and live demos from {event.name} {event.edition}. Try each one,
-            pick a favourite, and that becomes the front door. The switcher at the bottom of every page moves between them.
+            The same teams, screenshots and live demos in four views, each suited to a different audience. Pick the one
+            that fits; the bar at the bottom of every page switches between them.
           </p>
         </div>
       </section>
       <section className="section section--paper picker">
         <div className="container picker__grid">
-          {VARIANTS.map((v, i) => (
+          {VARIANTS.map((v) => (
             <Link key={v.id} to={`/${v.id}`} className="picker__card">
               <Thumb id={v.id} />
               <div className="picker__body">
-                <div className="picker__eyebrow mono">
-                  Option {String.fromCharCode(65 + i)} · /{v.id}
-                </div>
+                <div className="picker__eyebrow mono">Best for · {v.audience}</div>
                 <h2 className="picker__name">
                   <Icon name={v.icon} size={22} /> {v.name}
                 </h2>

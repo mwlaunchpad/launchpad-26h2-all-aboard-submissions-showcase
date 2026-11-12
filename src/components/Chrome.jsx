@@ -4,10 +4,10 @@ import { BASE, config_, event } from '../lib/content.js';
 import { isSealed, signOut } from '../lib/session.js';
 
 export const VARIANTS = [
-  { id: 'manifest', name: 'Manifest', blurb: 'The event site, extended. A team grid and a full page per team.', icon: 'layout-grid' },
-  { id: 'mission-control', name: 'Mission Control', blurb: 'A dark console. Pick a team on the left; demo in the middle; story on the right.', icon: 'monitor' },
-  { id: 'launch-sequence', name: 'Launch Sequence', blurb: 'Full-screen slides for presenting in a room. Arrow keys or a clicker.', icon: 'presentation' },
-  { id: 'flight-log', name: 'Flight Log', blurb: 'One long read along the joiner journey, Offer to Day 30, with every team on it.', icon: 'scroll-text' },
+  { id: 'manifest', name: 'Manifest', audience: 'A first look', blurb: 'The event site, extended. Browse every team, then open any one for its demo, screens and story.', icon: 'layout-grid' },
+  { id: 'mission-control', name: 'Mission Control', audience: 'Trying the demos', blurb: 'A dark console for hands-on exploring. Teams on the left, the live demo in the middle, the story on the right.', icon: 'monitor' },
+  { id: 'launch-sequence', name: 'Launch Sequence', audience: 'Presenting to a room', blurb: 'Full-screen slides, a few per team. Drive it with the arrow keys or a clicker.', icon: 'presentation' },
+  { id: 'flight-log', name: 'Flight Log', audience: 'Leaders and stakeholders', blurb: 'One long read along the joiner journey, Offer to Day 30, showing how each team tackled each stage.', icon: 'scroll-text' },
 ];
 
 export function Brand({ to = '/', onDark = false }) {
@@ -77,7 +77,7 @@ export function SiteFooter() {
   );
 }
 
-/** Floating switcher shown while the layouts are being reviewed (config.reviewMode). */
+/** Floating switcher between the four views (hidden when config.reviewMode is false). */
 export function VariantBar() {
   const { pathname } = useLocation();
   if (!config_.reviewMode) return null;
@@ -87,8 +87,8 @@ export function VariantBar() {
   const slug = pathname.match(/^\/(?:manifest|mission-control)\/([a-z0-9-]+)/)?.[1];
   const target = (v) => (slug && (v.id === 'manifest' || v.id === 'mission-control') ? `/${v.id}/${slug}` : `/${v.id}`);
   return (
-    <nav className="variant-bar" aria-label="Layout options">
-      <Link to="/" className="variant-bar__home" title="All layout options">
+    <nav className="variant-bar" aria-label="Views">
+      <Link to="/" className="variant-bar__home" title="All views">
         <Icon name="layers" size={14} />
       </Link>
       {VARIANTS.map((v) => (

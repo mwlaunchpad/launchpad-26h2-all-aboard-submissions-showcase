@@ -28,19 +28,19 @@ private archive (showcase/)  ──►  tools/content.mjs  ──►  vite build
 - **Limits.** This is client-side encryption: it stops scraping and casual access, but anyone holding a login can
   share it, and short passwords can be brute-forced offline against `keyring.json`. Use long passphrases.
 
-## Layout options (review)
+## Views
 
 | URL | Option |
 |---|---|
-| `/` | Picker: shows all options while `reviewMode` is on |
+| `/` | Front door: a card per view, with who it suits |
 | `/manifest/`, `/manifest/<team>` | A: Manifest. The event site, extended: team grid and team pages |
 | `/mission-control/<team>` | B: Mission Control. Dark console: rail, device stage, story panel |
 | `/launch-sequence/` | C: Launch Sequence. Full-screen presenter slides (←/→, O overview, F full screen) |
 | `/flight-log/` | D: Flight Log. Long read along the joiner journey, Offer to Day 30 |
 | `/demos/<team>/` | A team's live demo, full screen |
 
-To choose a layout, set `"defaultVariant": "manifest"` (or another option) in `showcase.config.json`, so `/` opens
-it. Set `"reviewMode": false` to hide the switcher.
+All four views stay available for different audiences. To make `/` open one view directly, set
+`"defaultVariant": "manifest"` (or another) in `showcase.config.json`; `"reviewMode": false` hides the switcher bar.
 
 ## Local development
 
