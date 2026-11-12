@@ -236,6 +236,13 @@ p:last-child { margin-bottom: 0; }
 .variant-bar a:hover { color: #fff; }
 .variant-bar a.on { background: var(--grad); color: #fff; }
 .variant-bar__home { display: inline-flex !important; padding: 8px 10px !important; }
+.variant-bar .vb-short { display: none; }
+@media (max-width: 520px) {
+  .variant-bar { bottom: 12px; }
+  .variant-bar a { padding: 8px 11px; }
+  .variant-bar .vb-full { display: none; }
+  .variant-bar .vb-short { display: inline; }
+}
 .v-ls ~ .variant-bar { bottom: 56px; opacity: 0.25; transition: opacity 200ms ease; }
 .v-ls ~ .variant-bar:hover { opacity: 1; }
 
