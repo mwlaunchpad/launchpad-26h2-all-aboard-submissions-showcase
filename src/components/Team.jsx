@@ -46,12 +46,12 @@ export function DemoKind({ team, onDark = false }) {
     <div className="chips">
       {hasLive(team) && (
         <span className={`chip chip--live ${onDark ? 'chip--dark' : ''}`}>
-          <span className="dot" /> Live demo
+          <span className="dot" /> Interactive demo
         </span>
       )}
       {hasVideo(team) && (
         <span className={`chip ${onDark ? 'chip--dark' : ''}`}>
-          <Icon name="video" size={12} /> Walkthrough
+          <Icon name="video" size={12} /> Walkthrough video
         </span>
       )}
     </div>

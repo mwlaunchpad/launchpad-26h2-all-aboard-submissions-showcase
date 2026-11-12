@@ -5,7 +5,7 @@ import { isSealed, signOut } from '../lib/session.js';
 
 export const VARIANTS = [
   { id: 'manifest', name: 'Manifest', short: 'Manifest', audience: 'A first look', blurb: 'The event site, extended. Browse every team, then open any one for its demo, screens and story.', icon: 'layout-grid' },
-  { id: 'mission-control', name: 'Mission Control', short: 'Mission', audience: 'Trying the demos', blurb: 'A dark console for hands-on exploring. Teams on the left, the live demo in the middle, the story on the right.', icon: 'monitor' },
+  { id: 'mission-control', name: 'Mission Control', short: 'Mission', audience: 'Trying the demos', blurb: 'A dark console for hands-on exploring. Teams on the left, their interactive demo or walkthrough video in the middle, the story on the right.', icon: 'monitor' },
   { id: 'launch-sequence', name: 'Launch Sequence', short: 'Slides', audience: 'Presenting to a room', blurb: 'Full-screen slides, a few per team. Drive it with the arrow keys or a clicker.', icon: 'presentation' },
   { id: 'flight-log', name: 'Flight Log', short: 'Flight Log', audience: 'Leaders and stakeholders', blurb: 'One long read along the joiner journey, Offer to Day 30, showing how each team tackled each stage.', icon: 'scroll-text' },
 ];

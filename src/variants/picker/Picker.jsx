@@ -88,7 +88,7 @@ export default function Picker() {
             {teams.length} teams. <span className="grad-text">Four ways in.</span>
           </h1>
           <p className="page-hero__lede">
-            The same teams, screenshots and live demos in four views, each suited to a different audience. Pick the one
+            The same teams, screenshots, walkthrough videos and interactive demos in four views, each suited to a different audience. Pick the one
             that fits; the bar at the bottom of every page switches between them.
           </p>
         </div>

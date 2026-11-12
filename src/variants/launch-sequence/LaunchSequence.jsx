@@ -345,7 +345,7 @@ function TeamDemo({ team, active }) {
   return (
     <div className="ls-pad ls-demo">
       <div className="ls-demo__text">
-        <div className="eyebrow">{team.name} · {live ? 'Live demo' : 'Walkthrough'}</div>
+        <div className="eyebrow">{team.name} · {live ? 'Interactive demo' : 'Walkthrough video'}</div>
         <h2 className="ls-h2 ls-h2--sm">What stands out</h2>
         <ol className="ls-hl">
           {team.highlights.slice(0, 5).map((h) => (

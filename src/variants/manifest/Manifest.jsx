@@ -62,7 +62,7 @@ function Home() {
           </h1>
           <p className="hero__sub">
             What Modern Workplace engineers built in two days in Leeds: companions that take a new joiner from offer to Day 30.
-            Every team has screenshots, a walkthrough, and a live demo where one could be kept running.
+            Every team has screenshots and a walkthrough video, and {teams.filter(hasLive).length} of the {teams.length} have an interactive demo you can click through.
           </p>
           <div className="hero__ctas">
             <a href="#teams" className="btn btn--primary">
@@ -295,7 +295,7 @@ function TeamPage() {
         <section className="section section--paper">
           <div className="container m-video-row">
             <div>
-              <div className="eyebrow">Walkthrough</div>
+              <div className="eyebrow">Walkthrough video</div>
               <h2 className="section__title">
                 See it <span className="grad-text">in motion.</span>
               </h2>

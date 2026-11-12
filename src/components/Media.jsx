@@ -4,7 +4,7 @@ import { DeviceFrame } from './Frames.jsx';
 import { demoUrl, hasLive, mediaUrl } from '../lib/content.js';
 import { useKeys } from '../lib/hooks.js';
 
-/** Live demo in a device frame. Loads only when asked, so pages with many teams stay light. */
+/** Interactive demo (the team's app, running in the browser) in a device frame. Loads only when asked, so pages with many teams stay light. */
 export function DemoEmbed({ team, maxWidth = 360, maxHeight = 760, autoLoad = false, tone = 'light', showNotes = true }) {
   const entries = team.demo.entries;
   const [i, setI] = useState(0);
@@ -34,7 +34,7 @@ export function DemoEmbed({ team, maxWidth = 360, maxHeight = 760, autoLoad = fa
         ) : (
           <button className="demo__launch" onClick={() => setLoaded(true)} style={cover ? { backgroundImage: `url(${cover})` } : undefined}>
             <span className="demo__launch-pill">
-              <Icon name="play" size={16} /> Launch live demo
+              <Icon name="smartphone" size={16} /> Try the interactive demo
             </span>
           </button>
         )}

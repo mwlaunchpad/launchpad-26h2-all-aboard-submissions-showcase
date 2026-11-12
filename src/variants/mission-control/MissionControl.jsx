@@ -63,7 +63,7 @@ export default function MissionControl() {
                 <span className="mc-rail__name">{t.name}</span>
                 <span className="mc-rail__product">{t.product}</span>
               </span>
-              <span className={`mc-rail__status ${hasLive(t) ? 'is-live' : ''}`} title={hasLive(t) ? 'Live demo' : 'Walkthrough'} />
+              <span className={`mc-rail__status ${hasLive(t) ? 'is-live' : ''}`} title={hasLive(t) ? 'Interactive demo' : 'Walkthrough video'} />
             </Link>
           ))}
         </nav>
@@ -80,8 +80,8 @@ export default function MissionControl() {
             <div className="seg seg--dark" role="tablist" aria-label="View">
               {modes.map((m, k) => (
                 <button key={m} role="tab" aria-selected={mode === m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)}>
-                  <Icon name={m === 'live' ? 'play' : m === 'video' ? 'video' : 'image'} size={14} />
-                  {m === 'live' ? 'Live demo' : m === 'video' ? 'Walkthrough' : 'Screens'}
+                  <Icon name={m === 'live' ? 'smartphone' : m === 'video' ? 'video' : 'image'} size={14} />
+                  {m === 'live' ? 'Interactive demo' : m === 'video' ? 'Walkthrough video' : 'Screens'}
                   <span className="mono seg__key">{k + 1}</span>
                 </button>
               ))}
